@@ -91,7 +91,7 @@ class TasksScreen extends StatelessWidget {
                         for (String color in MyThemeClass.themeColors.keys) {
                           // for (String list in myTaskData.toDoLists){
                           // for (String list in Provider.of<TaskData>(context, listen: false).toDoLists){
-                          double luminance = MyThemeClass.themeColors[color].computeLuminance();
+                          double luminance = MyThemeClass.themeColors[color]!.computeLuminance();
                           // print('luminance of $color is $luminance');
                           _themesAndBackup.add(
                             PopupMenuItem(
@@ -120,7 +120,10 @@ class TasksScreen extends StatelessWidget {
                         return _themesAndBackup;
                         // return [PopupMenuItem(child: Text('...'))];
                       },
-                      onSelected: (colorString) {
+                      onSelected: (value) {
+                      // onSelected: (colorString) {
+                        String colorString = '';
+                        if (value is String) colorString = value;
                         if (colorString == 'back_up') {
                           Navigator.push(context, MaterialPageRoute(builder: (context) {
                             return BackupChoiceScreen(_myTaskData);

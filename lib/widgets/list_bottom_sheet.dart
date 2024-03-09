@@ -1,3 +1,4 @@
+import 'package:todoey/widgets/my_raised_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:todoey/models/task_data.dart';
@@ -6,8 +7,8 @@ import 'package:provider/provider.dart';
 
 void showListBottomSheet(
   BuildContext parentContext, {
-  bool adding,
-  String listName,
+  bool? adding,
+  String? listName,
   /*int index, */
 }) {
   assert(
@@ -34,20 +35,20 @@ void showListBottomSheet(
 /// If editTaskText is provided, an index of the task must also be provided.
 class ListBottomSheet extends StatelessWidget {
   const ListBottomSheet({
-    @required this.parentContext,
+    required this.parentContext,
     this.addList,
     this.editListName,
     // this.index,
-    this.listName,
+    required this.listName,
 //    this.taskListClassObject,
   });
 
   final BuildContext parentContext;
-  final Function addList;
-  final Function editListName;
+  final Function? addList;
+  final Function? editListName;
 
   // final int index;
-  final String listName;
+  final String? listName;
 
 //  final TaskData taskListClassObject;
 
@@ -58,7 +59,7 @@ class ListBottomSheet extends StatelessWidget {
     focusNode.requestFocus();
     controller.text = listName ?? '';
     // String inputText;
-    String inputText = listName;
+    String inputText = listName ?? '';
     assert(addList != null || editListName != null, throw ('Either addList or editListName must be provided'));
     // assert (addList != null || (editListText != null && index != null && taskText != null),
     // throw ('If editListText is provided, an index and a text of the task must also be provided.'));
@@ -68,7 +69,7 @@ class ListBottomSheet extends StatelessWidget {
       print('executeAdd()');
       Navigator.pop(context);
       // bool successful = await addList(context, _inputText);
-      bool successful = await addList(parentContext, _inputText);
+      bool successful = await addList!(parentContext, _inputText);
       print(successful);
       // Lalle  0738082973
       // Navigator.pop(context);
@@ -78,7 +79,7 @@ class ListBottomSheet extends StatelessWidget {
     }
 
     void executeEdit(String _inputText) async {
-      await editListName(context, _inputText);
+      await editListName!(context, _inputText);
       Navigator.pop(context);
     }
 
@@ -118,7 +119,7 @@ class ListBottomSheet extends StatelessWidget {
               ),
               SizedBox(height: 10),
               adding
-                  ? RaisedButton(
+                  ? MyRaisedButton(
                       textColor: Colors.white,
                       child: Text('Add', style: TextStyle(inherit: true)),
                       onPressed: () async {
@@ -128,14 +129,14 @@ class ListBottomSheet extends StatelessWidget {
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        RaisedButton(
+                        MyRaisedButton(
                           textColor: Colors.white,
                           child: Text('Cancel', style: TextStyle(inherit: true)),
                           onPressed: () {
                             Navigator.pop(context);
                           },
                         ),
-                        RaisedButton(
+                        MyRaisedButton(
                           textColor: Colors.white,
                           child: Text('Ok', style: TextStyle(inherit: true)),
                           onPressed: () async {

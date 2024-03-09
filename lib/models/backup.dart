@@ -1,3 +1,4 @@
+import 'package:todoey/global.dart';
 import 'dart:convert';
 
 import 'package:todoey/screens/backup_copyable_screen.dart';
@@ -8,22 +9,26 @@ import 'task_data.dart';
 class Backup {
   static String _backupString = '';
   static Map<String, List<Task>> _listsAndTasks = {};
-  static TaskData _myTaskData;
+  static TaskData? _myTaskData;
 
   static void _createBackupString() {
-    _listsAndTasks = _myTaskData.listsAndTasks;
+    try {
+      _listsAndTasks = _myTaskData!.listsAndTasks;
 
-    for (String list in _listsAndTasks.keys) {
-      _backupString += '# ' + list + ':\n------------------------\n';
+      for (String list in _listsAndTasks.keys) {
+        _backupString += '# ' + list + ':\n------------------------\n';
 
-      if (_listsAndTasks[list].length == 0) {
-        _backupString += '<no tasks>\n';
-      } else {
-        for (Task task in _listsAndTasks[list]) {
-          _backupString += '* ' + task.taskText + ', ' + '${task.isDone ? 'Done' : 'Not done'}' + '\n';
+        if (_listsAndTasks[list]!.length == 0) {
+          _backupString += '<no tasks>\n';
+        } else {
+          for (Task task in _listsAndTasks[list]!) {
+            _backupString += '* ' + task.taskText + ', ' + '${task.isDone ? 'Done' : 'Not done'}' + '\n';
+          }
         }
+        _backupString += '------------------------\n\n';
       }
-      _backupString += '------------------------\n\n';
+    } catch (e) {
+      print('Error creating backup string: \n$e');
     }
   }
 
@@ -46,14 +51,19 @@ class Backup {
 
   static void retrieveFromBackup(TaskData myTaskData, String retrieveString) async {
     _myTaskData = myTaskData;
-    BuildContext context; // Just a dummy context to make _myTaskData methods happy. It's ok that it's null coz it won't be used.
+    // BuildContext? context; // Just a dummy context to make _myTaskData methods happy. It's ok that it's null coz it won't be used.
 
     // If listsAndTasks contains only the default list, and it has no tasks, let's remove it before retrieving backup:
-    if (_myTaskData.listsAndTasks.length == 1 &&
-        _myTaskData.listsAndTasks.containsKey(defaultList) &&
-        _myTaskData.listsAndTasks[defaultList].isEmpty) {
-      // The below will delete "currentList", which, given the condition, should be the defaultList
-      _myTaskData.deleteList(context, true);
+    try {
+      if (_myTaskData!.listsAndTasks.length == 1 &&
+          _myTaskData!.listsAndTasks.containsKey(defaultList) &&
+          _myTaskData!.listsAndTasks[defaultList]!.isEmpty) {
+        // The below will delete "currentList", which, given the condition, should be the defaultList
+        _myTaskData!.deleteList(GlobalVariable.navState.currentContext!, true);
+        // _myTaskData!.deleteList(context, true);
+      }
+    } catch (e) {
+      print('Error removing default list: \n$e');
     }
 
     for (String line in LineSplitter.split(retrieveString)) {
@@ -67,7 +77,7 @@ class Backup {
         int n = 2;
         for (int i = 1; i < n; i++) {
           // print('i is $i and n is $n');
-          bool nameTaken = await _myTaskData.checkIfListNameTaken(newLine);
+          bool nameTaken = await _myTaskData!.checkIfListNameTaken(newLine);
           print('Done checking if list name $newLine is taken, with result $nameTaken');
           if (nameTaken) {
             if (newLine.endsWith(' (${i - 1})')) {
@@ -82,9 +92,14 @@ class Backup {
           }
         }
 
-        BuildContext context; // This can be null, since I've already made sure the name is unique, I mean...
+        // BuildContext context; // This can be null, since I've already made sure the name is unique, I mean...
         print('Adding new list $newLine');
-        await _myTaskData.addList(context, newLine);
+        try {
+          await _myTaskData!.addList(GlobalVariable.navState.currentContext!, newLine);
+          // await _myTaskData!.addList(context, newLine);
+        } catch (e) {
+          print('Error adding list: \n$e');
+        }
         currentList = newLine;
         print('Done adding new list $newLine');
       } else if (line.startsWith('* ')) {
@@ -104,15 +119,23 @@ class Backup {
           }
         }
         print('newLine task after replace Done is $newLine. done is $done');
-        _myTaskData.addTask(Task(taskText: newLine, isDone: done));
+        try {
+          _myTaskData!.addTask(Task(taskText: newLine, isDone: done));
+        } catch (e) {
+          print('Error adding task: \n$e');
+        }
       }
     }
 
     // If after that whole for-loop, listsAndTasks is still empty, the retrieve text must
     // have been corrupted or empty or something else that's wrong. Then, we put back the
     // default list.
-    if (_myTaskData.listsAndTasks.isEmpty) {
-      _myTaskData.addList(context, defaultList);
+    if (_myTaskData?.listsAndTasks.isEmpty == true) {
+      try {
+        _myTaskData!.addList(GlobalVariable.navState.currentContext!, defaultList);
+      } catch (e) {
+        print('Error adding default list: \n$e');
+      }
     }
   }
 }

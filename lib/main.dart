@@ -6,7 +6,9 @@ import 'models/task_data.dart';
 // import 'package:todoey/todoey_storage.dart';
 // import 'todoe';
 
-void main([String colorOfEverything]) async {
+void main(List<String> arguments) async {
+  // String colorOfEverything = arguments.first;
+// void main([String colorOfEverything]) async {
   print('Running main()');
   WidgetsFlutterBinding.ensureInitialized();  //This needs to be done before finding the path...
   // await appPath;

@@ -7,14 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:todoey/todoey_storage.dart';
 
 class MyThemeClass extends ChangeNotifier {
-  static Color kColorOfEverything;
+  static late Color kColorOfEverything;
 
 // Color kColorOfEverything = Color(0xff673ab7);
   final String customColor = 'Custom Color';
-  File themeFile;
-  Uint8List themeBytes;
-  Map<String, ThemeData> myThemes;
-  ThemeData currentTheme;
+  File? themeFile;
+  Uint8List? themeBytes;
+  Map<String, ThemeData>? myThemes;
+  ThemeData? currentTheme;
 
   // ThemeData myThemes;
 
@@ -39,7 +39,7 @@ class MyThemeClass extends ChangeNotifier {
     // return null;
     // print('myThemes.keys.first is ${myThemes.keys.first} of type ${myThemes.keys.first.runtimeType}');
     String colorKey = themeColors.keys.firstWhere((k) {
-      return themeColors[k].value == kColorOfEverything.value;  // So that we start with the saved theme color if we have one
+      return themeColors[k]?.value == kColorOfEverything.value;  // So that we start with the saved theme color if we have one
     }, orElse: () => customColor);  // If, for some reason, your app was set on a color that is no longer there as an option
     // print('themeColors is $themeColors');
     // print('colorKey is $colorKey');
@@ -51,7 +51,7 @@ class MyThemeClass extends ChangeNotifier {
 
     // print('themeColors is $themeColors');
     myThemes = myThemes ?? getThemes();
-    currentTheme = currentTheme ?? myThemes[colorKey];
+    currentTheme = currentTheme ?? myThemes![colorKey];
     // myTheme = getTheme();
     notifyListeners();
     // print('currentTheme in getMyTheme() is $currentTheme');
@@ -65,74 +65,79 @@ class MyThemeClass extends ChangeNotifier {
 
     Map<String, ThemeData> themes = {};
 
-    for (String color in themeColors.keys) {
-      double luminance = themeColors[color].computeLuminance();
-      themes.addAll({
-        // color: ThemeData.dark().copyWith(
-        color: ThemeData.light().copyWith(
-          scaffoldBackgroundColor: themeColors[color],
-          appBarTheme: AppBarTheme().copyWith(color: themeColors[color]),
-          // accentColor: Colors.white,
-          accentColor: themeColors[color].withOpacity(0.5),  // The color of Alert buttons
-          // accentColor: themeColors[color].withAlpha(200),  // The color of Alert buttons
-          // The Alert buttons (DialogButtons)
-          // primaryColorDark: Colors.white,
-          primaryColorDark: themeColors[color],
-          // The foreground color of circleAvatars if it's background is light
-          primaryColorLight: Colors.white,
-          // primaryColorLight: themeColors[color],
-          // The foreground color of circleAvatars if it's background is dark
+    try {
+      for (String color in themeColors.keys) {
+        double luminance = themeColors[color]!.computeLuminance();
+        themes.addAll({
+          // color: ThemeData.dark().copyWith(
+          color: ThemeData.light().copyWith(
+            scaffoldBackgroundColor: themeColors[color],
+            appBarTheme: AppBarTheme().copyWith(color: themeColors[color]),
+            // accentColor: Colors.white,
+            // Todo: Check what happened to Alert buttons after below was deprecated:
+            // accentColor: themeColors[color].withOpacity(0.5),  // The color of Alert buttons
+            // accentColor: themeColors[color].withAlpha(200),  // The color of Alert buttons
+            // The Alert buttons (DialogButtons)
+            // primaryColorDark: Colors.white,
+            primaryColorDark: themeColors[color],
+            // The foreground color of circleAvatars if it's background is light
+            primaryColorLight: Colors.white,
+            // primaryColorLight: themeColors[color],
+            // The foreground color of circleAvatars if it's background is dark
 
-          iconTheme: IconThemeData(color: themeColors[color]),
-          textSelectionTheme: TextSelectionThemeData(cursorColor: themeColors[color]),
-          buttonTheme: ButtonThemeData(buttonColor: themeColors[color]),  // BottomSheet buttons
-          elevatedButtonTheme: ElevatedButtonThemeData(style: ButtonStyle(
-              foregroundColor: luminance < 0.1 ? MaterialStateProperty.all(Colors.white) : MaterialStateProperty.all(Colors.black),
-              backgroundColor: MaterialStateProperty.all(themeColors[color]),
-              // foregroundColor: MaterialStateProperty.all(Colors.black),
-              // backgroundColor: MaterialStateProperty.all(themeColors[color].withOpacity(0.5))
-              textStyle: MaterialStateProperty.all(TextStyle(fontSize: 18)),
-          )),
-          floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColors[color]),
+            iconTheme: IconThemeData(color: themeColors[color]),
+            textSelectionTheme: TextSelectionThemeData(cursorColor: themeColors[color]),
+            buttonTheme: ButtonThemeData(buttonColor: themeColors[color]),  // BottomSheet buttons
+            elevatedButtonTheme: ElevatedButtonThemeData(style: ButtonStyle(
+                foregroundColor: luminance < 0.1 ? MaterialStateProperty.all(Colors.white) : MaterialStateProperty.all(Colors.black),
+                backgroundColor: MaterialStateProperty.all(themeColors[color]),
+                // foregroundColor: MaterialStateProperty.all(Colors.black),
+                // backgroundColor: MaterialStateProperty.all(themeColors[color].withOpacity(0.5))
+                textStyle: MaterialStateProperty.all(TextStyle(fontSize: 18)),
+            )),
+            floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColors[color]),
 
-          textTheme: TextTheme(
-            bodyText2: TextStyle(fontSize: 20, color: Colors.black), // DialogButtons in Alerts
-            subtitle1: TextStyle(color: Colors.black),  // PopupMenuItems
-            // button: TextStyle(color: Colors.pinkAccent, backgroundColor: Colors.pinkAccent, fontSize: 20),
-            // headline1: TextStyle(color: Colors.pinkAccent),
-            // headline2: TextStyle(color: Colors.pinkAccent),
-            // headline3: TextStyle(color: Colors.pinkAccent),
-            // headline4: TextStyle(color: Colors.pinkAccent),
-            // headline5: TextStyle(color: Colors.pinkAccent),
-            // headline6: TextStyle(color: Colors.pinkAccent),
-            // subtitle2: TextStyle(color: Colors.pinkAccent),
-            // bodyText1: TextStyle(color: Colors.pinkAccent),
-            // caption: TextStyle(color: Colors.pinkAccent),
-            // overline: TextStyle(color: Colors.pinkAccent),
-            // : TextStyle(color: Colors.pinkAccent),
-            // : TextStyle(color: Colors.pinkAccent),
-            // : TextStyle(color: Colors.pinkAccent),
-            // : TextStyle(color: Colors.pinkAccent),
-            // : TextStyle(color: Colors.pinkAccent),
-            //
-          ),
-
-          bottomSheetTheme: BottomSheetThemeData(
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-          ),
-
-          inputDecorationTheme: InputDecorationTheme(
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: themeColors[color], width: 2),
+            textTheme: TextTheme(
+              bodyText2: TextStyle(fontSize: 20, color: Colors.black), // DialogButtons in Alerts
+              subtitle1: TextStyle(color: Colors.black),  // PopupMenuItems
+              // button: TextStyle(color: Colors.pinkAccent, backgroundColor: Colors.pinkAccent, fontSize: 20),
+              // headline1: TextStyle(color: Colors.pinkAccent),
+              // headline2: TextStyle(color: Colors.pinkAccent),
+              // headline3: TextStyle(color: Colors.pinkAccent),
+              // headline4: TextStyle(color: Colors.pinkAccent),
+              // headline5: TextStyle(color: Colors.pinkAccent),
+              // headline6: TextStyle(color: Colors.pinkAccent),
+              // subtitle2: TextStyle(color: Colors.pinkAccent),
+              // bodyText1: TextStyle(color: Colors.pinkAccent),
+              // caption: TextStyle(color: Colors.pinkAccent),
+              // overline: TextStyle(color: Colors.pinkAccent),
+              // : TextStyle(color: Colors.pinkAccent),
+              // : TextStyle(color: Colors.pinkAccent),
+              // : TextStyle(color: Colors.pinkAccent),
+              // : TextStyle(color: Colors.pinkAccent),
+              // : TextStyle(color: Colors.pinkAccent),
+              //
             ),
-          ),
-        )
-      });
+
+            bottomSheetTheme: BottomSheetThemeData(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+            ),
+
+            inputDecorationTheme: InputDecorationTheme(
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: themeColors[color]!, width: 2),
+              ),
+            ),
+          )
+        });
+      }
+      // print('themes is $themes');
+      // print('themes[$customColor] is ${themes['$customColor']}');
+      if (themes[customColor] != null) print('themes[$customColor].scaffoldBackgroundColor is ${themes['$customColor']?.scaffoldBackgroundColor}');
+    } catch (e) {
+      print('Error : \n$e');
     }
-    // print('themes is $themes');
-    // print('themes[$customColor] is ${themes['$customColor']}');
-    if (themes[customColor] != null) print('themes[$customColor].scaffoldBackgroundColor is ${themes['$customColor'].scaffoldBackgroundColor}');
     return themes;
   }
 
@@ -170,45 +175,59 @@ class MyThemeClass extends ChangeNotifier {
 
   void changeTheme(String colorString) {
     print('Running changeTheme()');
-    kColorOfEverything = themeColors[colorString];
-    // print('kColorOfEverything in changeTheme() is $kColorOfEverything');
-    // print('currentTheme BEFORE change is $currentTheme. '
-    //     'currentTheme.scaffoldBackgroundColor is ${currentTheme.scaffoldBackgroundColor}');
-    currentTheme = myThemes[colorString];
-    // print('currentTheme AFTER change is $currentTheme. '
-    //     'currentTheme.scaffoldBackgroundColor is ${currentTheme.scaffoldBackgroundColor}');
-    notifyListeners();
-    writeTheme();
+    try {
+      kColorOfEverything = themeColors[colorString]!;
+      // print('kColorOfEverything in changeTheme() is $kColorOfEverything');
+      // print('currentTheme BEFORE change is $currentTheme. '
+      //     'currentTheme.scaffoldBackgroundColor is ${currentTheme.scaffoldBackgroundColor}');
+      currentTheme = myThemes![colorString];
+      // print('currentTheme AFTER change is $currentTheme. '
+      //     'currentTheme.scaffoldBackgroundColor is ${currentTheme.scaffoldBackgroundColor}');
+      notifyListeners();
+      writeTheme();
+    } catch (e) {
+      print('Error changing theme: \n$e');
+    }
   }
 
   Future writeTheme() async {
-    themeFile = File('${await appPath}/themeFile.txt');
-    MapEntry<String, Color> toWrite = MapEntry('color', kColorOfEverything);
-    // print('toWrite is $toWrite');
-    FileMode mode = FileMode.write;
-    themeFile.writeAsStringSync('${themeToJson(toWrite)}\n', mode: mode);
+    try {
+      themeFile = File('${await appPath}/themeFile.txt');
+      MapEntry<String, Color> toWrite = MapEntry('color', kColorOfEverything);
+      // print('toWrite is $toWrite');
+      FileMode mode = FileMode.write;
+      themeFile!.writeAsStringSync('${themeToJson(toWrite)}\n', mode: mode);
+    } catch (e) {
+      print('Error writing themes: \n$e');
+    }
   }
 
   Future<Color> readTheme() async {
     themeFile = File('${await appPath}/themeFile.txt');
-    Color color;
+    Color? color;
 
-    if (await themeFile.exists()) {
-      try {
-        themeBytes = themeFile.readAsBytesSync();
-        // print('themeBytes is $themeBytes');
-      } on Exception catch (e) {
-        print(e.toString());
+    try {
+      if (await themeFile!.exists()) {
+        try {
+          themeBytes = themeFile!.readAsBytesSync();
+          // print('themeBytes is $themeBytes');
+        } on Exception catch (e) {
+          print(e.toString());
+        }
+
+        String line = Utf8Decoder().convert(themeBytes!);
+        // print('line is $line');
+        Map<String, dynamic> decodedThemeLine = jsonDecode(line);
+        // print('decodedThemeLine is $decodedThemeLine');
+        color = colorFromJson(decodedThemeLine);
       }
-
-      String line = Utf8Decoder().convert(themeBytes);
-      // print('line is $line');
-      Map<String, dynamic> decodedThemeLine = jsonDecode(line);
-      // print('decodedThemeLine is $decodedThemeLine');
-      color = colorFromJson(decodedThemeLine);
+    } catch (e) {
+      print('Error reading theme'
+          ': \n$e');
     }
     // print('color is $color of type ${color.runtimeType}');
-    return color;
+    assert (color != null, throw 'Color was null after all');
+    return color!;
   }
 
   Map<String, dynamic> themeToJson(MapEntry<String, Color> entry) {

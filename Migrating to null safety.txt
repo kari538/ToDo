@@ -1,0 +1,16 @@
+Migrating to null safety
+
+In pubspec.yaml:
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+#  sdk: ">=2.7.0 <3.0.0"  # Without null safety
+
+$ flutter pub upgrade --major-versions
+
+Changed 2 constraints in pubspec.yaml:
+  provider: ^4.3.2+2 -> ^6.1.2
+  path_provider: ^1.6.21 -> ^2.1.2
+
+LOTS of red errors in Dart Analysis...
+

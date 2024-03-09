@@ -2,7 +2,7 @@
 
 class Task {
   Task({
-    this.taskText,
+    this.taskText = '',
     this.isDone = false,
     this.beingEdited = false,
   });

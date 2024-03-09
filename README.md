@@ -1,6 +1,6 @@
-# todoey
+# ToDo
 
-A new Flutter application.
+A Flutter to-do list application.
 
 ## Getting Started
 

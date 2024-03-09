@@ -4,18 +4,18 @@ import 'package:todoey/theme.dart';
 //class TaskTile extends StatefulWidget {
 class TaskTile extends StatelessWidget {
   TaskTile({
-    @required this.taskText,
-    @required this.isChecked,
-    @required this.beingEdited,
-    @required this.first,
-    @required this.last,
-    @required this.onTapCheckbox,
-    @required this.onTapEditText,
-    @required this.onTapDelete,
-    @required this.onTapArrowDown,
-    @required this.onLongPressArrowDown,
-    @required this.onTapArrowUp,
-    @required this.onLongPressArrowUp,
+    required this.taskText,
+    required this.isChecked,
+    required this.beingEdited,
+    required this.first,
+    required this.last,
+    required this.onTapCheckbox,
+    required this.onTapEditText,
+    required this.onTapDelete,
+    required this.onTapArrowDown,
+    required this.onLongPressArrowDown,
+    required this.onTapArrowUp,
+    required this.onLongPressArrowUp,
     this.onLongPress,
   });
 
@@ -29,7 +29,7 @@ class TaskTile extends StatelessWidget {
   final bool beingEdited;
   final bool first;
   final bool last;
-  final Function onLongPress;
+  final Function? onLongPress;
   final Function onTapCheckbox;
   final Function onTapEditText;
   final Function onTapDelete;
@@ -69,10 +69,14 @@ class TaskTile extends StatelessWidget {
             beingEdited
                 ? Row(
                     children: [
-                      GestureDetector(child: Icon(Icons.edit), onTap: onTapEditText),
-                      GestureDetector(child: Icon(Icons.delete_forever), onTap: onTapDelete),
-                      ! last ? GestureDetector(onTap: onTapArrowDown, onLongPress: onLongPressArrowDown, child: Icon(Icons.arrow_downward)/*, padding: EdgeInsets.all(0), visualDensity: VisualDensity.compact*/) : SizedBox(),
-                      ! first ? GestureDetector(onTap: onTapArrowUp, onLongPress: onLongPressArrowUp, child: Icon(Icons.arrow_upward)/*, padding: EdgeInsets.all(0), visualDensity: VisualDensity.compact*/) : SizedBox(),
+                      GestureDetector(child: Icon(Icons.edit), onTap: onTapEditText()),
+                      GestureDetector(child: Icon(Icons.delete_forever), onTap: onTapDelete()),
+                      last ? GestureDetector(onTap: () {onTapArrowDown();}, onLongPress: () {onLongPressArrowDown();}, child: Icon(Icons.arrow_downward)/*, padding: EdgeInsets.all(0), visualDensity: VisualDensity.compact*/) : SizedBox(),
+                      first ? GestureDetector(onTap: () {onTapArrowUp();}, onLongPress: () {onLongPressArrowUp();}, child: Icon(Icons.arrow_upward)/*, padding: EdgeInsets.all(0), visualDensity: VisualDensity.compact*/) : SizedBox(),
+                      // GestureDetector(child: Icon(Icons.edit), onTap: onTapEditText),
+                      // GestureDetector(child: Icon(Icons.delete_forever), onTap: onTapDelete),
+                      // ! last ? GestureDetector(onTap: onTapArrowDown, onLongPress: onLongPressArrowDown, child: Icon(Icons.arrow_downward)/*, padding: EdgeInsets.all(0), visualDensity: VisualDensity.compact*/) : SizedBox(),
+                      // ! first ? GestureDetector(onTap: onTapArrowUp, onLongPress: onLongPressArrowUp, child: Icon(Icons.arrow_upward)/*, padding: EdgeInsets.all(0), visualDensity: VisualDensity.compact*/) : SizedBox(),
                     ],
                   )
                 : Checkbox(
@@ -93,7 +97,9 @@ class TaskTile extends StatelessWidget {
                   ),
           ],
         ),
-        onLongPress: onLongPress,
+        onLongPress: onLongPress != null ? null : () {
+          onLongPress!();
+        },
       // ),
     );
   }

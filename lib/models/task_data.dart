@@ -21,126 +21,132 @@ class TaskData extends ChangeNotifier {
     currentList: [],
   };
 
-  File listFile;
+  File? listFile;
   Map<String, File> taskFiles = {};
 
   Future<void> getSavedTasks() async {
     print('Running getSavedTasks');
-    Stream<List<int>> listStream;
-    Stream<List<int>> taskStream;
-    Future doneGetTasks;
+    Stream<List<int>>? listStream;
+    Stream<List<int>>? taskStream;
+    Future? doneGetTasks;
 
     // function:
     void retrieveTasks(String _list) {
       print('Running retrieveTasks() for list $_list. taskFiles[_list] is ${taskFiles[_list]}');
       try {
-        taskStream = taskFiles[_list].openRead();
+        taskStream = taskFiles[_list]!.openRead();
       } on Exception catch (e) {
-        print(e.toString());
+        print('Error retrieving tasks: \n' + e.toString());
       }
-      taskStream.transform(utf8.decoder).transform(LineSplitter()).listen((String line) {
-        Map<String, dynamic> decodedTaskLine = {};
-        try {
-          decodedTaskLine = jsonDecode(line);
-        } catch (e) {
-          print(e);
-        }
-        // print('decodedTaskLine is $decodedTaskLine');
-        // print('line is $line');
+      if (taskStream != null) {
+        taskStream!.transform(utf8.decoder).transform(LineSplitter()).listen((String line) {
+          Map<String, dynamic> decodedTaskLine = {};
+          try {
+            decodedTaskLine = jsonDecode(line);
+            // print('decodedTaskLine is $decodedTaskLine');
+            // print('line is $line');
 
-        _listsAndTasks[_list].add(taskFromJson(decodedTaskLine));
-        // _tasks.add(fromJson(decodedLine));
-        notifyListeners();
-        // print('_listsAndTasks[$_list] is ${_listsAndTasks[_list]}');
-      }).onDone(() {
-        print('_listsAndTasks after taskStream in retrieveTasks() is $_listsAndTasks');
-      });
+            _listsAndTasks[_list]!.add(taskFromJson(decodedTaskLine));
+            // _tasks.add(fromJson(decodedLine));
+          } catch (e) {
+            print('Error in taskStream!.transform: \n$e');
+          }
+          notifyListeners();
+          // print('_listsAndTasks[$_list] is ${_listsAndTasks[_list]}');
+        }).onDone(() {
+          print('_listsAndTasks after taskStream in retrieveTasks() is $_listsAndTasks');
+        });
+      }
     }
 
     listFile = File('${await appPath}/lists.txt');
 
-    if (await listFile.exists()) {
+    if (await listFile?.exists() == true) {
       String syncAppPath = await appPath;
       // print("List file exists: $listFile");
       // If a list file exists, I don't need my default initial list:
       _listsAndTasks = {};
 
       try {
-        listStream = listFile.openRead();
+        listStream = listFile!.openRead();
       } on Exception catch (e) {
-        print(e.toString());
+        print('sddsfgsdf '+ e.toString());
       }
       int i = 0;
-      doneGetTasks = listStream.transform(utf8.decoder).transform(LineSplitter()).listen((String line) {
-        Map<String, dynamic> decodedListLine;
-        try {
-          decodedListLine = jsonDecode(line);
-        } on Exception catch (e) {
-          // print('I think this is where the error is\nvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv');
-          print(e);
-          // print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
-          print('line is $line');
 
-          String syncAppPathSlash = syncAppPath + '/';
-          // List<FileSystemEntity> _folders;
-          Directory myDir = Directory(syncAppPathSlash);
-          // _folders = myDir.listSync(recursive: true, followLinks: false);
-          // print('_folders is $_folders');
+      if (listStream != null) {
+        doneGetTasks = listStream.transform(utf8.decoder).transform(LineSplitter()).listen((String line) {
+          Map<String, dynamic> decodedListLine;
+          try {
+            decodedListLine = jsonDecode(line);
+          } on Exception catch (e) {
+            // print('I think this is where the error is\nvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv');
+            print(e);
+            // print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+            print('line is $line');
 
-          String fileName = formatFileName(line);
-          // decodedListLine = {"list": '$line', "path": syncAppPath};  //In case of an old list file without path
-          // decodedListLine = {"list": '$line', "path": File('$syncAppPath/tasks.txt').path};  //In case of an old list file without path
-          decodedListLine = {"list": '$line', "path": File('$syncAppPath/$fileName.txt').path}; //In case of an old list file without path
-          // decodedListLine = {"list": '$line', "path": File('$syncAppPath/Tasks.txt').path};  //In case of an old list file without path
-          // decodedListLine = {"list": '$line', "path": ''};  //In case of an old list file without path
+            String syncAppPathSlash = syncAppPath + '/';
+            // List<FileSystemEntity> _folders;
+            Directory myDir = Directory(syncAppPathSlash);
+            // _folders = myDir.listSync(recursive: true, followLinks: false);
+            // print('_folders is $_folders');
 
-        }
-        // print('List line is $line');
-        // print('decodedListLine is $decodedListLine');
-        Map<String, File> fromFile;
-        try {
-          fromFile = listFromJson(decodedListLine);
-        } on Exception catch (e) {
-          print(e);
-        }
-        String listName = fromFile.keys.first;
-        _listsAndTasks.addAll({listName: []});
-        taskFiles.addAll(fromFile);
-        // _listsAndTasks.addAll({line: []});
-        // print('_listsAndTasks is $_listsAndTasks');
-        // print('taskFiles is $taskFiles');
-        if (i == 0) currentList = listName;
-        // _tasks.add(fromJson(decodedListLine));
-        i++;
-      }).asFuture() /*.onDone(() async {
-        print('listStream is over\n*******************************************************');
-        // notifyListeners();
+            String fileName = formatFileName(line);
+            // decodedListLine = {"list": '$line', "path": syncAppPath};  //In case of an old list file without path
+            // decodedListLine = {"list": '$line', "path": File('$syncAppPath/tasks.txt').path};  //In case of an old list file without path
+            decodedListLine = {"list": '$line', "path": File('$syncAppPath/$fileName.txt').path}; //In case of an old list file without path
+            // decodedListLine = {"list": '$line', "path": File('$syncAppPath/Tasks.txt').path};  //In case of an old list file without path
+            // decodedListLine = {"list": '$line', "path": ''};  //In case of an old list file without path
 
-        for (String list in _listsAndTasks.keys) {
-          // print('taskFiles[list] is ${taskFiles[list]}');
-          if (!(await taskFiles[list].exists())) {
-            print('${taskFiles[list]} does not exist');
-            String listFileName = formatFileName(list);
-
-            // print('list is $list and listFileName is $listFileName');
-
-            taskFiles[list] = File('${await appPath}/$listFileName.txt');
-            // taskFiles.addAll({'$list': File('${await appPath}/$listFileName.txt')});
-          } else {
-            // print('${taskFiles[list]} DOES exist');
           }
-          // taskFiles = File('${await appPath}/tasks.txt');
-          // If there is already data in this file, which there probably is:
-          if (await taskFiles[list].exists()) {
-            print("The task file ${taskFiles[list]} exists");
-            retrieveTasks(list);
-          } else {
-            print('taskFile ${taskFiles[list]} doesn\'t exist');
+          // print('List line is $line');
+          // print('decodedListLine is $decodedListLine');
+          Map<String, File>? fromFile;
+          String? listName;
+          try {
+            fromFile = listFromJson(decodedListLine);
+            listName = fromFile.keys.first;
+            _listsAndTasks.addAll({listName: []});
+            taskFiles.addAll(fromFile);
+          } on Exception catch (e) {
+            print(e);
           }
-        }
-        return true;
-      })*/
-          ;
+          // _listsAndTasks.addAll({line: []});
+          // print('_listsAndTasks is $_listsAndTasks');
+          // print('taskFiles is $taskFiles');
+          if (i == 0) currentList = listName ?? '';
+          // _tasks.add(fromJson(decodedListLine));
+          i++;
+        }).asFuture() /*.onDone(() async {
+          print('listStream is over\n*******************************************************');
+          // notifyListeners();
+
+          for (String list in _listsAndTasks.keys) {
+            // print('taskFiles[list] is ${taskFiles[list]}');
+            if (!(await taskFiles[list].exists())) {
+              print('${taskFiles[list]} does not exist');
+              String listFileName = formatFileName(list);
+
+              // print('list is $list and listFileName is $listFileName');
+
+              taskFiles[list] = File('${await appPath}/$listFileName.txt');
+              // taskFiles.addAll({'$list': File('${await appPath}/$listFileName.txt')});
+            } else {
+              // print('${taskFiles[list]} DOES exist');
+            }
+            // taskFiles = File('${await appPath}/tasks.txt');
+            // If there is already data in this file, which there probably is:
+            if (await taskFiles[list].exists()) {
+              print("The task file ${taskFiles[list]} exists");
+              retrieveTasks(list);
+            } else {
+              print('taskFile ${taskFiles[list]} doesn\'t exist');
+            }
+          }
+          return true;
+        })*/
+            ;
+      }
     } else {
       // print('listFile doesn\'t exist. Checking for old task file...');
 
@@ -149,7 +155,7 @@ class TaskData extends ChangeNotifier {
       // taskFiles = File('${await appPath}/tasks.txt');
 
       // If there is already data in this file:
-      if (await taskFiles[singleList].exists()) {
+      if (await taskFiles[singleList]?.exists() == true) {
         // print("The old task file exists: ${taskFiles[singleList]}");
         retrieveTasks(singleList);
         // try {
@@ -171,7 +177,11 @@ class TaskData extends ChangeNotifier {
         String listFileName = formatFileName(singleList);
         // File correctFile = File('${await appPath}/$listFileName.txt');
         // Overwrite the old file in taskFiles with new file:
-        taskFiles[singleList].rename('${await appPath}/$listFileName.txt');
+        try {
+          taskFiles[singleList]!.rename('${await appPath}/$listFileName.txt');
+        } catch (e) {
+          print('Error renaming singleList: \n$e');
+        }
         // taskFiles[singleList] = correctFile;
         // Write data to new file:
         currentList = singleList; // This should already be the case, but just to be sure...
@@ -184,27 +194,29 @@ class TaskData extends ChangeNotifier {
     // print('listStream is over\n*******************************************************');
     // notifyListeners();
 
-    await doneGetTasks;
-    for (String list in _listsAndTasks.keys) {
-      // print('taskFiles[list] is ${taskFiles[list]}');
-      if (!(await taskFiles[list].exists())) {
-        // print('${taskFiles[list]} does not exist');
-        String listFileName = formatFileName(list);
+    if (doneGetTasks != null) {
+      await doneGetTasks;
+      for (String list in _listsAndTasks.keys) {
+        // print('taskFiles[list] is ${taskFiles[list]}');
+        if (!(await taskFiles[list]?.exists() == true)) {
+          // print('${taskFiles[list]} does not exist');
+          String listFileName = formatFileName(list);
 
-        // print('list is $list and listFileName is $listFileName');
+          // print('list is $list and listFileName is $listFileName');
 
-        taskFiles[list] = File('${await appPath}/$listFileName.txt');
-        // taskFiles.addAll({'$list': File('${await appPath}/$listFileName.txt')});
-      } else {
-        // print('${taskFiles[list]} DOES exist');
-      }
-      // taskFiles = File('${await appPath}/tasks.txt');
-      // If there is already data in this file, which there probably is:
-      if (await taskFiles[list].exists()) {
-        // print("The task file ${taskFiles[list]} exists");
-        retrieveTasks(list);
-      } else {
-        // print('taskFile ${taskFiles[list]} doesn\'t exist');
+          taskFiles[list] = File('${await appPath}/$listFileName.txt');
+          // taskFiles.addAll({'$list': File('${await appPath}/$listFileName.txt')});
+        } else {
+          // print('${taskFiles[list]} DOES exist');
+        }
+        // taskFiles = File('${await appPath}/tasks.txt');
+        // If there is already data in this file, which there probably is:
+        if (await taskFiles[list]?.exists() == true) {
+          // print("The task file ${taskFiles[list]} exists");
+          retrieveTasks(list);
+        } else {
+          // print('taskFile ${taskFiles[list]} doesn\'t exist');
+        }
       }
     }
     // return true;
@@ -272,7 +284,7 @@ class TaskData extends ChangeNotifier {
   }
 
   void deleteList(BuildContext context, [bool fromBackup = false]) async {
-    bool confirmed;
+    bool? confirmed;
 
     if (fromBackup) {
       confirmed = true;
@@ -297,8 +309,8 @@ class TaskData extends ChangeNotifier {
       try {
         _listsAndTasks.remove(currentList);
 
-        if (await taskFiles[currentList].exists()) {
-          await taskFiles[currentList].delete();
+        if (await taskFiles[currentList]?.exists() == true) {
+          await taskFiles[currentList]!.delete();
         }
         taskFiles.remove(currentList);
 
@@ -379,13 +391,17 @@ class TaskData extends ChangeNotifier {
 
       String fileName = formatFileName(newName);
       String newPath = '${await appPath}/$fileName.txt';
-      File oldFile = taskFiles[oldName];
-      // print('taskFiles is $taskFiles');
-      // print('oldFile is $oldFile. Renaming it.');
-      // print('oldFile is $oldFile. Deleting it.');
-      if (await oldFile.exists()) {
-        oldFile.rename(newPath);
-        // oldFile.delete();
+      try {
+        File oldFile = taskFiles[oldName]!;
+        // print('taskFiles is $taskFiles');
+        // print('oldFile is $oldFile. Renaming it.');
+        // print('oldFile is $oldFile. Deleting it.');
+        if (await oldFile.exists()) {
+          oldFile.rename(newPath);
+          // oldFile.delete();
+        }
+      } catch (e) {
+        print('Error changing list name: \n$e');
       }
 
       taskFiles = taskFiles.map((key, value) {
@@ -410,10 +426,12 @@ class TaskData extends ChangeNotifier {
     print('Running addTask with newTask $newTask');
     print('_listsAndTasks is $_listsAndTasks');
     print('currentList is $currentList');
-    for (Task entry in _listsAndTasks[currentList]) {
-      entry.beingEdited = false;
+    if (_listsAndTasks[currentList] != null) {
+      for (Task entry in _listsAndTasks[currentList]!) {
+        entry.beingEdited = false;
+      }
+      _listsAndTasks[currentList]!.add(newTask);
     }
-    _listsAndTasks[currentList].add(newTask);
     // _listsAndTasks[currentList].add(Task(taskText: newTask));
     // print('_listsAndTasks[$currentList] is ${_listsAndTasks[currentList]}');
     notifyListeners();
@@ -421,16 +439,20 @@ class TaskData extends ChangeNotifier {
     writeTasksToFile();
   }
 
-  void editTaskText({@required int index, @required String newTaskText}) {
-    Task currentTask = _listsAndTasks[currentList][index];
-    currentTask.taskText = newTaskText;
+  void editTaskText({required int index, required String newTaskText}) {
+    try {
+      Task currentTask = _listsAndTasks[currentList]![index];
+      currentTask.taskText = newTaskText;
 
-    for (Task entry in _listsAndTasks[currentList]) {
-      entry.beingEdited = false;
+      for (Task entry in _listsAndTasks[currentList]!) {
+        entry.beingEdited = false;
+      }
+
+      notifyListeners();
+      writeTasksToFile();
+    } catch (e) {
+      print('Error editing task: \n$e');
     }
-
-    notifyListeners();
-    writeTasksToFile();
   }
 
   void checkTask(Task currentTask) {
@@ -445,7 +467,7 @@ class TaskData extends ChangeNotifier {
     if (editedBefore) {
       currentTask.beingEdited = false;
     } else {
-      for (Task entry in _listsAndTasks[currentList]) {
+      for (Task entry in _listsAndTasks[currentList]!) {
         entry.beingEdited = false;
       }
       currentTask.beingEdited = true;
@@ -454,66 +476,86 @@ class TaskData extends ChangeNotifier {
   }
 
   void deleteTask(BuildContext context, Task toDelete) async {
-    bool confirmed = await Alert(context: context, title: "Delete", desc: "Do you want to delete this task?", buttons: [
-      DialogButton(
-          child: Text('Cancel'),
-          onPressed: () {
-            Navigator.pop(context, false);
-          }),
-      DialogButton(
-          child: Text('Delete'),
-          onPressed: () {
-            Navigator.pop(context, true);
-          }),
-    ]).show();
+    try {
+      bool? confirmed = await Alert(context: context, title: "Delete", desc: "Do you want to delete this task?", buttons: [
+        DialogButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.pop(context, false);
+            }),
+        DialogButton(
+            child: Text('Delete'),
+            onPressed: () {
+              Navigator.pop(context, true);
+            }),
+      ]).show();
 
-    if (confirmed == true) {
-      _listsAndTasks[currentList].remove(toDelete);
-      notifyListeners();
-      // print('Writing _tasks[currentList] to file');
-      writeTasksToFile();
-    } else
-      print('Cancelled delete');
+      if (confirmed == true) {
+        _listsAndTasks[currentList]!.remove(toDelete);
+        notifyListeners();
+        // print('Writing _tasks[currentList] to file');
+        writeTasksToFile();
+      } else
+        print('Cancelled delete');
+    } catch (e) {
+      print('Error deleting task: \n$e');
+    }
   }
 
   void checkAll() {
-    for (Task task in _listsAndTasks[currentList]) {
-      task.isDone = true;
+    try {
+      for (Task task in _listsAndTasks[currentList]!) {
+        task.isDone = true;
+      }
+      notifyListeners();
+    } catch (e) {
+      print('Error checking all: \n$e');
     }
-    notifyListeners();
   }
 
   void unCheckAll() {
-    for (Task task in _listsAndTasks[currentList]) {
-      task.isDone = false;
+    try {
+      for (Task task in _listsAndTasks[currentList]!) {
+        task.isDone = false;
+      }
+      notifyListeners();
+    } catch (e) {
+      print('Error unchecking all: \n$e');
     }
-    notifyListeners();
   }
 
   void checkedToTop() {
-    List<Task> _checkedList = [];
-    List<Task> _unCheckedList = [];
-    for (Task task in _listsAndTasks[currentList]) {
-      if (task.isDone) _checkedList.add(task);
-      else _unCheckedList.add(task);
+    try {
+      List<Task> _checkedList = [];
+      List<Task> _unCheckedList = [];
+      for (Task task in _listsAndTasks[currentList]!) {
+        if (task.isDone) _checkedList.add(task);
+        else _unCheckedList.add(task);
+      }
+      _listsAndTasks[currentList] = _checkedList + _unCheckedList;
+      notifyListeners();
+    } catch (e) {
+      print('Error checked to top: \n$e');
     }
-    _listsAndTasks[currentList] = _checkedList + _unCheckedList;
-    notifyListeners();
   }
 
   void checkedToBottom() {
-    List<Task> _checkedList = [];
-    List<Task> _unCheckedList = [];
-    for (Task task in _listsAndTasks[currentList]) {
-      if (task.isDone) _checkedList.add(task);
-      else _unCheckedList.add(task);
+    try {
+      List<Task> _checkedList = [];
+      List<Task> _unCheckedList = [];
+      for (Task task in _listsAndTasks[currentList]!) {
+        if (task.isDone) _checkedList.add(task);
+        else _unCheckedList.add(task);
+      }
+      _listsAndTasks[currentList] = _unCheckedList + _checkedList;
+      notifyListeners();
+    } catch (e) {
+      print('Error checked to bottom: \n$e');
     }
-    _listsAndTasks[currentList] = _unCheckedList + _checkedList;
-    notifyListeners();
   }
 
   void deleteAllTasks(BuildContext context) async {
-    bool confirmed = await Alert(context: context, title: "Delete", desc: "Do you want to delete all tasks in this list?", buttons: [
+    bool? confirmed = await Alert(context: context, title: "Delete", desc: "Do you want to delete all tasks in this list?", buttons: [
       DialogButton(
           child: Text('Cancel'),
           onPressed: () {
@@ -536,100 +578,140 @@ class TaskData extends ChangeNotifier {
   }
 
   void deleteCheckedTasks(BuildContext context) async {
-    bool confirmed = await Alert(context: context, title: "Delete", desc: "Do you want to delete all checked tasks in this list?", buttons: [
-      DialogButton(
-          child: Text('Cancel'),
-          onPressed: () {
-            Navigator.pop(context, false);
-          }),
-      DialogButton(
-          child: Text('Delete'),
-          onPressed: () {
-            Navigator.pop(context, true);
-          }),
-    ]).show();
+    try {
+      bool? confirmed = await Alert(context: context, title: "Delete", desc: "Do you want to delete all checked tasks in this list?", buttons: [
+        DialogButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.pop(context, false);
+            }),
+        DialogButton(
+            child: Text('Delete'),
+            onPressed: () {
+              Navigator.pop(context, true);
+            }),
+      ]).show();
 
-    if (confirmed == true) {
-      // List<String> toDelete = [];
+      if (confirmed == true) {
+        // List<String> toDelete = [];
 
-      for (int i = 0; i < _listsAndTasks[currentList].length; i++) {
-        // print('Checking if task ${_listsAndTasks[currentList][i]} is done');
-        // for (Task task in _listsAndTasks[currentList]) {
-        if (_listsAndTasks[currentList][i].isDone) {
-          _listsAndTasks[currentList].removeAt(i);
-          i--;
+        for (int i = 0; i < _listsAndTasks[currentList]!.length; i++) {
+          // print('Checking if task ${_listsAndTasks[currentList][i]} is done');
+          // for (Task task in _listsAndTasks[currentList]) {
+          if (_listsAndTasks[currentList]![i].isDone) {
+            _listsAndTasks[currentList]!.removeAt(i);
+            i--;
+          }
         }
-      }
 
-      notifyListeners();
-      // print('Writing _listsAndTasks[$currentList] = ${_listsAndTasks[currentList]} to file');
-      writeTasksToFile();
-    } else
-      print('Cancelled delete');
+        notifyListeners();
+        // print('Writing _listsAndTasks[$currentList] = ${_listsAndTasks[currentList]} to file');
+        writeTasksToFile();
+      } else
+        print('Cancelled delete');
+    } catch (e) {
+      print('Error deleting task: \n$e');
+    }
   }
 
   void moveTaskDown(Task currentTask, int index) {
     // print('_listsAndTasks[currentList] before move is ${_listsAndTasks[currentList]}');
     // print('index is $index');
-    _listsAndTasks[currentList][index] = _listsAndTasks[currentList][index + 1];
-    _listsAndTasks[currentList][index + 1] = currentTask;
-    // print('_listsAndTasks[currentList] after move is ${_listsAndTasks[currentList]}');
-    notifyListeners();
-    writeTasksToFile();
+    try {
+      _listsAndTasks[currentList]![index] = _listsAndTasks[currentList]![index + 1];
+      _listsAndTasks[currentList]![index + 1] = currentTask;
+      // print('_listsAndTasks[currentList] after move is ${_listsAndTasks[currentList]}');
+      notifyListeners();
+      writeTasksToFile();
+    } catch (e) {
+      print('Error moving task down: \n$e');
+    }
   }
 
   void moveTaskToEnd(Task currentTask, int index) {
-    for (int i = index; i < _listsAndTasks[currentList].length - 1; i++) {
-      _listsAndTasks[currentList][i] = _listsAndTasks[currentList][i + 1];
+    try {
+      for (int i = index; i < _listsAndTasks[currentList]!.length - 1; i++) {
+        _listsAndTasks[currentList]![i] = _listsAndTasks[currentList]![i + 1];
+      }
+      _listsAndTasks[currentList]![_listsAndTasks[currentList]!.length - 1] = currentTask;
+      notifyListeners();
+      writeTasksToFile();
+    } catch (e) {
+      print('Error moving task to end: \n$e');
     }
-    _listsAndTasks[currentList][_listsAndTasks[currentList].length - 1] = currentTask;
-    notifyListeners();
-    writeTasksToFile();
   }
 
   void moveTaskUp(Task currentTask, int index) {
-    _listsAndTasks[currentList][index] = _listsAndTasks[currentList][index - 1];
-    _listsAndTasks[currentList][index - 1] = currentTask;
-    notifyListeners();
-    writeTasksToFile();
+    // if (_listsAndTasks.containsKey(currentList) && _listsAndTasks[currentList] != null){
+      try {
+        _listsAndTasks[currentList]![index] = _listsAndTasks[currentList]![index - 1];
+        _listsAndTasks[currentList]![index - 1] = currentTask;
+      } catch (e) {
+        print('Error moving task up: \n$e');
+      }
+      notifyListeners();
+      writeTasksToFile();
+    // }
   }
 
   void moveTaskToTop(Task currentTask, int index) {
-    for (int i = index; i > 0; i--) {
-      _listsAndTasks[currentList][i] = _listsAndTasks[currentList][i - 1];
+    try {
+      for (int i = index; i > 0; i--) {
+        _listsAndTasks[currentList]![i] = _listsAndTasks[currentList]![i - 1];
+      }
+      _listsAndTasks[currentList]![0] = currentTask;
+    } catch (e) {
+      print('Error moving task to top: \n$e');
     }
-    _listsAndTasks[currentList][0] = currentTask;
     notifyListeners();
     writeTasksToFile();
   }
 
+  // void moveTaskToTop(Task currentTask, int index) {
+  //   for (int i = index; i > 0; i--) {
+  //     _listsAndTasks[currentList][i] = _listsAndTasks[currentList][i - 1];
+  //   }
+  //   _listsAndTasks[currentList][0] = currentTask;
+  //   notifyListeners();
+  //   writeTasksToFile();
+  // }
+
+
   void writeListsToFile() {
-    print('Writing lists to file');
-    int i = 0;
-    for (String list in _listsAndTasks.keys) {
-      MapEntry<String, File> toWrite = MapEntry(list, taskFiles[list]);
-      // print('toWrite is $toWrite');
-      FileMode mode = i == 0 ? FileMode.write : FileMode.append;
-      listFile.writeAsStringSync('${listToJson(toWrite)}\n', mode: mode);
-      // listFile.writeAsStringSync('$list\n', mode: mode);
-      i++;
+    try {
+      print('Writing lists to file');
+      int i = 0;
+      for (String list in _listsAndTasks.keys) {
+        MapEntry<String, File> toWrite = MapEntry(list, taskFiles[list]!);
+        // print('toWrite is $toWrite');
+        FileMode mode = i == 0 ? FileMode.write : FileMode.append;
+        listFile!.writeAsStringSync('${listToJson(toWrite)}\n', mode: mode);
+        // listFile.writeAsStringSync('$list\n', mode: mode);
+        i++;
+      }
+    } catch (e) {
+      print('Error writing lists to file: \n$e');
     }
   }
 
   void writeTasksToFile() {
     // print('_listsAndTasks in writeTasksToFile() is $_listsAndTasks');
-    print('currentList in writeTasksToFile() is $currentList');
-    print('_listsAndTasks[currentList] in writeTasksToFile() is ${_listsAndTasks[currentList]}');
+    try {
+      print('currentList in writeTasksToFile() is $currentList');
+      print('_listsAndTasks[currentList] in writeTasksToFile() is ${_listsAndTasks[currentList]}');
 
-    if (_listsAndTasks[currentList].length == 0){
-      taskFiles[currentList].delete();
-    } else {
-      int i = 0;
-      for (Task entry in _listsAndTasks[currentList]) {
-        FileMode mode = i == 0 ? FileMode.write : FileMode.append;
-        taskFiles[currentList].writeAsStringSync('${taskToJson(entry)}\n', mode: mode);
-        i++;
+      if (_listsAndTasks[currentList]!.length == 0){
+        taskFiles[currentList]!.delete();
+      } else {
+        int i = 0;
+        for (Task entry in _listsAndTasks[currentList]!) {
+          FileMode mode = i == 0 ? FileMode.write : FileMode.append;
+          taskFiles[currentList]!.writeAsStringSync('${taskToJson(entry)}\n', mode: mode);
+          i++;
+        }
       }
+    } catch (e) {
+      print('Error writing tasks to file: \n$e');
     }
   }
 
@@ -687,7 +769,7 @@ class TaskData extends ChangeNotifier {
   ///Never returns null.
   int get taskCount {
     // return _tasks.length;
-    int _length = _listsAndTasks.containsKey(currentList) ? _listsAndTasks[currentList].length : 0;
+    int _length = _listsAndTasks.containsKey(currentList) ? _listsAndTasks[currentList]!.length : 0;
     return _length;
   }
 }

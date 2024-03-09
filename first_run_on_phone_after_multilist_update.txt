@@ -1,0 +1,28 @@
+Launching lib\main.dart on Nokia 4 2 in debug mode...
+Running Gradle task 'assembleDebug'...
+√  Built build\app\outputs\flutter-apk\app-debug.apk.
+Installing build\app\outputs\flutter-apk\app.apk...
+Debug service listening on ws://127.0.0.1:60968/QGoMT9rRg3g=/ws
+Syncing files to device Nokia 4 2...
+I/flutter (27358): Running main()
+I/flutter (27358): Running getSavedTasks
+I/flutter (27358): FileSystemException: Cannot open file, path = '/data/user/0/com.example.todoey/app_flutter/themeFile.txt' (OS Error: No such file or directory, errno = 2)
+E/flutter (27358): [ERROR:flutter/lib/ui/ui_dart_state.cc(199)] Unhandled Exception: NoSuchMethodError: The getter 'length' was called on null.
+E/flutter (27358): Receiver: null
+E/flutter (27358): Tried calling: length
+E/flutter (27358): #0      Object.noSuchMethod (dart:core-patch/object_patch.dart:54:5)
+E/flutter (27358): #1      _Utf8Decoder.convertSingle (dart:convert-patch/convert_patch.dart:1735:69)
+E/flutter (27358): #2      Utf8Decoder.convert (dart:convert/utf.dart:322:42)
+E/flutter (27358): #3      MyThemeClass.readTheme (package:todoey/theme.dart:187:33)
+E/flutter (27358): <asynchronous suspension>
+E/flutter (27358): #4      MyThemeClass.getMyTheme (package:todoey/theme.dart:46:48)
+E/flutter (27358): <asynchronous suspension>
+E/flutter (27358): #5      main (package:todoey/main.dart:19:3)
+E/flutter (27358): <asynchronous suspension>
+E/flutter (27358): 
+I/flutter (27358): listFile doesn't exist. Checking for old task file...
+I/flutter (27358): The old task file exists
+I/flutter (27358): getSavedTasks() is ready
+W/.example.todoe(27358): Reducing the number of considered missed Gc histogram windows from 111 to 100
+I/Gralloc4(27358): mapper 4.x is not supported
+W/Gralloc3(27358): mapper 3.x is not supported

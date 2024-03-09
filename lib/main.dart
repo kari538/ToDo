@@ -1,3 +1,4 @@
+import 'global.dart';
 import 'package:flutter/material.dart';
 import 'screens/tasks_screen.dart';
 import 'theme.dart';
@@ -55,6 +56,7 @@ class MyApp extends StatelessWidget {
             // theme: ThemeData.light(),
             theme: Provider.of<MyThemeClass>(context).currentTheme,
             home: TasksScreen(myTaskData, myThemeClass),
+            navigatorKey: GlobalVariable.navState,
             debugShowCheckedModeBanner: false,
           );
         });

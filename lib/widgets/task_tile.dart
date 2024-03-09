@@ -41,20 +41,23 @@ class TaskTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // print('Building TaskTile of "$taskText"');
+    print('Building TaskTile of "$taskText"');
     // return Container(
     return /*Container(
       color: Colors.deepPurpleAccent,
       child:*/ ListTile(
         contentPadding: EdgeInsets.fromLTRB(10, 0, 0, 0),
         horizontalTitleGap: 0,
+        // A row with a taskText and a checkbox if not being edited.
+        // A taskText and a number of buttons if being edited.
         title: Row(
           children: [
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(right: 30.0),
                 child: GestureDetector(
-                  child: Text(taskText,
+                  child: Text(
+                      taskText,
                       style: TextStyle(
                         fontSize: 20,
                         color: Colors.black,
@@ -69,10 +72,23 @@ class TaskTile extends StatelessWidget {
             beingEdited
                 ? Row(
                     children: [
-                      GestureDetector(child: Icon(Icons.edit), onTap: onTapEditText()),
-                      GestureDetector(child: Icon(Icons.delete_forever), onTap: onTapDelete()),
-                      last ? GestureDetector(onTap: () {onTapArrowDown();}, onLongPress: () {onLongPressArrowDown();}, child: Icon(Icons.arrow_downward)/*, padding: EdgeInsets.all(0), visualDensity: VisualDensity.compact*/) : SizedBox(),
-                      first ? GestureDetector(onTap: () {onTapArrowUp();}, onLongPress: () {onLongPressArrowUp();}, child: Icon(Icons.arrow_upward)/*, padding: EdgeInsets.all(0), visualDensity: VisualDensity.compact*/) : SizedBox(),
+                      GestureDetector(child: Icon(Icons.edit), onTap: () {
+                        onTapEditText();
+                      }),
+                      GestureDetector(child: Icon(Icons.delete_forever), onTap: () {
+                        onTapDelete();
+                      }),
+                      !last
+                          ? GestureDetector(
+                          onTap: () {onTapArrowDown();},
+                          onLongPress: () {onLongPressArrowDown();},
+                          child: Icon(Icons.arrow_downward)/*, padding: EdgeInsets.all(0), visualDensity: VisualDensity.compact*/)
+                          : SizedBox(),
+                      !first ? GestureDetector(
+                          onTap: () {onTapArrowUp();},
+                          onLongPress: () {onLongPressArrowUp();},
+                          child: Icon(Icons.arrow_upward)/*, padding: EdgeInsets.all(0), visualDensity: VisualDensity.compact*/)
+                          : SizedBox(),
                       // GestureDetector(child: Icon(Icons.edit), onTap: onTapEditText),
                       // GestureDetector(child: Icon(Icons.delete_forever), onTap: onTapDelete),
                       // ! last ? GestureDetector(onTap: onTapArrowDown, onLongPress: onLongPressArrowDown, child: Icon(Icons.arrow_downward)/*, padding: EdgeInsets.all(0), visualDensity: VisualDensity.compact*/) : SizedBox(),
@@ -97,7 +113,8 @@ class TaskTile extends StatelessWidget {
                   ),
           ],
         ),
-        onLongPress: onLongPress != null ? null : () {
+        onLongPress: onLongPress == null ? null : () {
+          print('Long-pressed an item');
           onLongPress!();
         },
       // ),

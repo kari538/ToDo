@@ -4,3 +4,4 @@ import 'package:flutter/material.dart';
 class GlobalVariable {
   static final GlobalKey<NavigatorState> navState = GlobalKey<NavigatorState>();
 }
+// navigatorKey: GlobalVariable.navState has to be put in the MaterialApp in main().

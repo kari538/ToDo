@@ -472,6 +472,7 @@ class TaskData extends ChangeNotifier {
       }
       currentTask.beingEdited = true;
     }
+    print('Updated beingEdited for all items.');
     notifyListeners();
   }
 

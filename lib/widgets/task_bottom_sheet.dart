@@ -1,6 +1,5 @@
 import 'package:todoey/widgets/my_raised_button.dart';
 import 'package:todoey/models/task.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:todoey/models/task_data.dart';
 import 'package:todoey/theme.dart';
@@ -86,7 +85,8 @@ class _TaskBottomSheetState extends State<TaskBottomSheet> {
             children: [
               Text(adding == true ? 'Add Task' : 'Edit Task', style: TextStyle(color: MyThemeClass.kColorOfEverything, fontSize: 30), textAlign: TextAlign.center),
               TextField(
-//            style: TextStyle(color: Colors.pinkAccent),
+                //Todo: Why doesn't the below come from Theme anymore?:
+           style: TextStyle(color: Colors.black),
                 onChanged: (value) {
                   inputText = value;
                   // controller.text = value;
@@ -104,7 +104,7 @@ class _TaskBottomSheetState extends State<TaskBottomSheet> {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 10),
-              adding == true ?                   MyRaisedButton(
+              adding == true ? MyRaisedButton(
                 textColor: Colors.white,
                 child: Text('Add', style: TextStyle(inherit: true)),
                 onPressed: () {

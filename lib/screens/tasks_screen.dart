@@ -78,6 +78,7 @@ class TasksScreen extends StatelessWidget {
                 children: [
                   // GestureDetector(
                   //   child:
+                  // Settings cogwheel:
                   Align(
                     child: PopupMenuButton(
                       itemBuilder: (context) {
@@ -136,9 +137,11 @@ class TasksScreen extends StatelessWidget {
                     ),
                     alignment: Alignment.centerRight,
                   ),
+                  // List button:
                   CircleAvatar(
                     child: PopupMenuButton(
                       itemBuilder: (context) {
+                        // Start with a non-clickeable text that says "All lists:"
                         List<PopupMenuItem> lists = [
                           PopupMenuItem(
                               child: Text(
@@ -146,11 +149,13 @@ class TasksScreen extends StatelessWidget {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ))
                         ];
+                        // Then add all the user's lists:
                         for (String list in myTaskData.lists) {
                           // for (String list in myTaskData.toDoLists){
                           // for (String list in Provider.of<TaskData>(context, listen: false).toDoLists){
                           lists.add(PopupMenuItem(child: Text(list), value: list));
                         }
+                        // Finally the "Make new list" option:
                         lists.add(
                           PopupMenuItem(
                             child: Text('Make new list', style: TextStyle(fontStyle: FontStyle.italic)),
@@ -168,13 +173,15 @@ class TasksScreen extends StatelessWidget {
                           showListBottomSheet(context, adding: true);
                         }
                       },
-                      icon: Icon(Icons.list, size: 30 /*, color: kColorOfEverything*/),
+                      icon: Icon(Icons.list, size: 30
+                        /*, color: kColorOfEverything*/,
+                      // TODO: Take the below back into the theme again...:
+                      color: MyThemeClass.kColorOfEverything,),
                     ),
                     // icon: Icon(Icons.list, size: 30, color: Colors.amber)),
                     // child: Icon(Icons.list, size: 50, color: Colors.white),
                     // child: Icon(Icons.list, size: 30, color: kColorOfEverything),
                     radius: 30,
-                    // backgroundColor: Colors.deepOrange,
                     backgroundColor: Colors.white,
                   ),
 //                   onTap: () {

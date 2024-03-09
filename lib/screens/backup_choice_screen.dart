@@ -31,7 +31,7 @@ class BackupChoiceScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 bool retrieve = false;
-                String retrieveString;
+                String? retrieveString;
                 retrieveString = await Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return BackupRetrieveScreen();
                 }));

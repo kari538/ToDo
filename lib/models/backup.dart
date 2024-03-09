@@ -1,3 +1,4 @@
+import 'package:todoey/my_pretty_print.dart';
 import 'package:todoey/global.dart';
 import 'dart:convert';
 
@@ -93,7 +94,8 @@ class Backup {
         }
 
         // BuildContext context; // This can be null, since I've already made sure the name is unique, I mean...
-        print('Adding new list $newLine');
+        print('Adding new list $newLine. _myTaskData is:');
+        myPrettyPrint(_myTaskData?.listsAndTasks);
         try {
           await _myTaskData!.addList(GlobalVariable.navState.currentContext!, newLine);
           // await _myTaskData!.addList(context, newLine);

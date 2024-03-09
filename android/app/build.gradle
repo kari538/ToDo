@@ -12,13 +12,13 @@ if (flutterRoot == null) {
 }
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '2'    // todo: To be incremented with each release build
-}
+//if (flutterVersionCode == null) {
+    flutterVersionCode = '3'    // ---TODO: To be incremented with each release build
+//}
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
+    flutterVersionName = '1.0.3'  // ---TODO: To be incremented with major release build
 }
 
 apply plugin: 'com.android.application'
@@ -40,7 +40,7 @@ android {
     defaultConfig {
         applicationId "com.karolinadart.todo"
 //        applicationId "com.example.todoey"
-        minSdkVersion 16    //With 21 or higher here, I don't need multi-dex
+        minSdkVersion flutter.minSdkVersion    //With 21 or higher here, I don't need multi-dex
         targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

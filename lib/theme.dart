@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:todoey/todoey_storage.dart';
 
 class MyThemeClass extends ChangeNotifier {
-  static late Color kColorOfEverything;
+  static Color? kColorOfEverything;
 
 // Color kColorOfEverything = Color(0xff673ab7);
   final String customColor = 'Custom Color';
@@ -39,12 +39,12 @@ class MyThemeClass extends ChangeNotifier {
     // return null;
     // print('myThemes.keys.first is ${myThemes.keys.first} of type ${myThemes.keys.first.runtimeType}');
     String colorKey = themeColors.keys.firstWhere((k) {
-      return themeColors[k]?.value == kColorOfEverything.value;  // So that we start with the saved theme color if we have one
+      return themeColors[k]?.value == kColorOfEverything!.value; // So that we start with the saved theme color if we have one
     }, orElse: () => customColor);  // If, for some reason, your app was set on a color that is no longer there as an option
     // print('themeColors is $themeColors');
     // print('colorKey is $colorKey');
     if (colorKey == customColor) {
-      themeColors.addAll({colorKey: kColorOfEverything});
+      themeColors.addAll({colorKey: kColorOfEverything!});
       // print('themeColors is $themeColors');
       // getThemes();
     }
@@ -73,33 +73,36 @@ class MyThemeClass extends ChangeNotifier {
           color: ThemeData.light().copyWith(
             scaffoldBackgroundColor: themeColors[color],
             appBarTheme: AppBarTheme().copyWith(color: themeColors[color]),
-            // accentColor: Colors.white,
-            // Todo: Check what happened to Alert buttons after below was deprecated:
-            // accentColor: themeColors[color].withOpacity(0.5),  // The color of Alert buttons
-            // accentColor: themeColors[color].withAlpha(200),  // The color of Alert buttons
-            // The Alert buttons (DialogButtons)
-            // primaryColorDark: Colors.white,
+            colorScheme: ThemeData.light().colorScheme.copyWith(
+                  secondary: themeColors[color]!.withOpacity(0.5),
+                  // The new color of Alert buttons (DialogButtons), after accentColor was deprecated
+                ),
+            // The foreground color of circleAvatars if it's background is light:
             primaryColorDark: themeColors[color],
-            // The foreground color of circleAvatars if it's background is light
+            // The foreground color of circleAvatars if it's background is dark:
             primaryColorLight: Colors.white,
-            // primaryColorLight: themeColors[color],
-            // The foreground color of circleAvatars if it's background is dark
 
             iconTheme: IconThemeData(color: themeColors[color]),
             textSelectionTheme: TextSelectionThemeData(cursorColor: themeColors[color]),
-            buttonTheme: ButtonThemeData(buttonColor: themeColors[color]),  // BottomSheet buttons
-            elevatedButtonTheme: ElevatedButtonThemeData(style: ButtonStyle(
-                foregroundColor: luminance < 0.1 ? MaterialStateProperty.all(Colors.white) : MaterialStateProperty.all(Colors.black),
-                backgroundColor: MaterialStateProperty.all(themeColors[color]),
-                // foregroundColor: MaterialStateProperty.all(Colors.black),
-                // backgroundColor: MaterialStateProperty.all(themeColors[color].withOpacity(0.5))
-                textStyle: MaterialStateProperty.all(TextStyle(fontSize: 18)),
+            buttonTheme: ButtonThemeData(buttonColor: themeColors[color]),
+            // BottomSheet buttons
+            elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ButtonStyle(
+              foregroundColor: luminance < 0.1 ? MaterialStateProperty.all(Colors.white) : MaterialStateProperty.all(Colors.black),
+              backgroundColor: MaterialStateProperty.all(themeColors[color]),
+              // foregroundColor: MaterialStateProperty.all(Colors.black),
+              // backgroundColor: MaterialStateProperty.all(themeColors[color].withOpacity(0.5))
+              textStyle: MaterialStateProperty.all(TextStyle(fontSize: 18)),
             )),
-            floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColors[color]),
+            floatingActionButtonTheme: FloatingActionButtonThemeData().copyWith(
+              backgroundColor: themeColors[color],
+              foregroundColor: Colors.white,
+              shape: CircleBorder(),
+            ),
 
             textTheme: TextTheme(
               bodyText2: TextStyle(fontSize: 20, color: Colors.black), // DialogButtons in Alerts
-              subtitle1: TextStyle(color: Colors.black),  // PopupMenuItems
+              subtitle1: TextStyle(color: Colors.black), // PopupMenuItems
               // button: TextStyle(color: Colors.pinkAccent, backgroundColor: Colors.pinkAccent, fontSize: 20),
               // headline1: TextStyle(color: Colors.pinkAccent),
               // headline2: TextStyle(color: Colors.pinkAccent),
@@ -193,7 +196,7 @@ class MyThemeClass extends ChangeNotifier {
   Future writeTheme() async {
     try {
       themeFile = File('${await appPath}/themeFile.txt');
-      MapEntry<String, Color> toWrite = MapEntry('color', kColorOfEverything);
+      MapEntry<String, Color> toWrite = MapEntry('color', kColorOfEverything!);
       // print('toWrite is $toWrite');
       FileMode mode = FileMode.write;
       themeFile!.writeAsStringSync('${themeToJson(toWrite)}\n', mode: mode);
@@ -202,7 +205,7 @@ class MyThemeClass extends ChangeNotifier {
     }
   }
 
-  Future<Color> readTheme() async {
+  Future<Color?> readTheme() async {
     themeFile = File('${await appPath}/themeFile.txt');
     Color? color;
 
@@ -227,7 +230,7 @@ class MyThemeClass extends ChangeNotifier {
     }
     // print('color is $color of type ${color.runtimeType}');
     assert (color != null, throw 'Color was null after all');
-    return color!;
+    return color;
   }
 
   Map<String, dynamic> themeToJson(MapEntry<String, Color> entry) {

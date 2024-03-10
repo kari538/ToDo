@@ -17,3 +17,6 @@ key.properties
 /gradle.properties
 /settings.gradle
 /settings_aar.gradle
+
+/app/src/main/AndroidManifest.xml
+/app/build.gradle

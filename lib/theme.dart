@@ -229,7 +229,6 @@ class MyThemeClass extends ChangeNotifier {
           ': \n$e');
     }
     // print('color is $color of type ${color.runtimeType}');
-    assert (color != null, throw 'Color was null after all');
     return color;
   }
 

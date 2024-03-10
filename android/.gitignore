@@ -20,3 +20,5 @@ key.properties
 
 /app/src/main/AndroidManifest.xml
 /app/build.gradle
+/app/src/main/kotlin/com/example/todo/MainActivity.kt
+/app/src/main/res/values-night/styles.xml

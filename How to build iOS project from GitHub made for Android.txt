@@ -1,0 +1,19 @@
+Make sure the ios folder is in .gitignore.
+
+In Android Studio:
+
+Make a new project from Version Control, and copy-paste the URL from the GitHub repo.
+
+OBS OBS OBS OBS OBS OBS!!:
+
+The module folder name must be small_letters_with_underscore!... Even if the repo name isn't.
+
+Also try and find a way to avoid getting Linux, macOS, web etc...
+
+$ flutter pub get
+
+Make sure an iOS Simulator is open.
+
+Run.
+
+ios folder should be created automatically.
